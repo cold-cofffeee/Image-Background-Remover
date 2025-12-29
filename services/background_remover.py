@@ -125,13 +125,14 @@ class BackgroundRemoverService:
             img_np = np.array(original_image)
             mask_np = np.array(pred)
             
+            # Ensure mask is properly scaled (0-255 range)
+            # Threshold the mask to create a binary mask (improves edge quality)
+            # Values above 128 are considered foreground
+            mask_np = np.where(mask_np > 128, 255, 0).astype(np.uint8)
+            
             # Apply mask to create transparent background
-            if img_np.shape[2] == 3:  # RGB
-                # Add alpha channel
-                img_rgba = np.dstack((img_np, mask_np))
-            else:
-                img_rgba = img_np.copy()
-                img_rgba[:, :, 3] = mask_np
+            # Create RGBA image with the mask as alpha channel
+            img_rgba = np.dstack((img_np, mask_np))
             
             result_image = Image.fromarray(img_rgba, 'RGBA')
             
