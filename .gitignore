@@ -51,9 +51,10 @@ static/temp/*
 logs/
 *.log
 
-# Model Files (optional - comment out if you want to commit models)
-# saved_models/u2net/*.pth
-# saved_models/u2net/*.pkl
+# Model Files (large files excluded from git)
+saved_models/u2net/*.pth
+saved_models/u2net/*.pkl
+!saved_models/u2net/.gitkeep
 
 # Testing
 .pytest_cache/

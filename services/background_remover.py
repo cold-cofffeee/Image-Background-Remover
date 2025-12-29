@@ -30,13 +30,22 @@ class BackgroundRemoverService:
             print("🔄 Loading U2Net model...")
             self.model = U2NET(3, 1)
             
-            # Try to load pre-trained weights if available
-            if os.path.exists(self.model_path):
-                self.model.load_state_dict(torch.load(self.model_path, map_location=self.device))
-                print("✅ Pre-trained model loaded successfully")
-            else:
-                print("⚠️ Pre-trained model not found. Using initialized model.")
-                print(f"   Place your trained model at: {self.model_path}")
+            # Check if model file exists, if not try to download it
+            if not os.path.exists(self.model_path):
+                print("⚠️ Model file not found. Attempting to download...")
+                try:
+                    from download_model import download_model
+                    if not download_model():
+                        raise Exception("Model download failed")
+                except Exception as e:
+                    print(f"❌ Could not download model: {e}")
+                    print(f"   Please manually download and place at: {self.model_path}")
+                    self.model_loaded = False
+                    return
+            
+            # Load pre-trained weights
+            self.model.load_state_dict(torch.load(self.model_path, map_location=self.device))
+            print("✅ Pre-trained model loaded successfully")
             
             self.model.to(self.device)
             self.model.eval()

@@ -23,6 +23,8 @@ matplotlib==3.7.2
 # Utilities
 python-dotenv==1.0.0
 gunicorn==21.2.0
+requests==2.31.0
+tqdm==4.66.1
 
 # Optional - For API enhancements
 flask-cors==4.0.0

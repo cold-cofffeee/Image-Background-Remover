@@ -1,0 +1,58 @@
+services:
+  # Web Service Configuration
+  - type: web
+    name: image-background-remover
+    env: python
+    region: oregon  # Choose your preferred region: oregon, frankfurt, singapore, ohio
+    plan: free  # free tier available, upgrade to starter/standard for better performance
+    
+    # Build Configuration
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python download_model.py
+    
+    # Start Command
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    
+    # Environment Variables
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      
+      - key: SECRET_KEY
+        generateValue: true  # Auto-generate secure secret key
+      
+      - key: DEBUG
+        value: False
+      
+      - key: FLASK_ENV
+        value: production
+      
+      - key: MAX_CONTENT_LENGTH
+        value: 16777216  # 16MB in bytes
+      
+      # Render sets PORT automatically, but you can reference it
+      # - key: PORT
+      #   value: 10000
+    
+    # Health Check
+    healthCheckPath: /
+    
+    # Disk Storage (for uploaded/processed images)
+    # Note: Free tier includes 1GB disk, files persist across deploys
+    disk:
+      name: app-data
+      mountPath: /opt/render/project/src/static
+      sizeGB: 1
+    
+    # Auto-Deploy
+    autoDeploy: true  # Auto-deploy on git push
+    
+    # Scaling (requires paid plan)
+    # numInstances: 2
+    # scaling:
+    #   minInstances: 1
+    #   maxInstances: 3
+    #   targetMemoryPercent: 80
+    #   targetCPUPercent: 80

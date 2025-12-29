@@ -34,17 +34,46 @@ A professional-grade web application for removing image backgrounds using the U2
 
 ## ⚡ Quick Start
 
-### Install Dependencies
+### Windows Users
 
 ```bash
-pip install -r requirements.txt
+# One-command setup
+setup.bat
+
+# Then start the app
+start.bat
 ```
 
-### Download Model
+### Linux/Mac Users
 
-Place `u2net.pth` (176MB) in `saved_models/u2net/`
+```bash
+# One-command setup
+chmod +x setup.sh start.sh
+./setup.sh
 
-Download: [U2Net Model](https://drive.google.com/file/d/1ao1ovG1Qtx4b7EoskHXmi2E9rp5CHLcZ/view)
+# Then start the app
+./start.sh
+```
+
+### Manual Setup
+
+```bash
+# 1. Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Download model (automatic)
+python download_model.py
+
+# 4. Run the app
+python app.py
+```
+
+The model file (~168MB) will be downloaded automatically!
 
 ### Run
 
@@ -174,17 +203,38 @@ MAX_BATCH_SIZE=10
 
 ## 🌐 Deployment
 
-### Development
+### Local Development
 
 ```bash
 python app.py
+# Access at http://localhost:5000
 ```
 
-### Production (Gunicorn)
+### Production with Gunicorn
 
 ```bash
-gunicorn -w 4 -b 0.0.0.0:5000 app:app
+gunicorn app:app --bind 0.0.0.0:5000 --workers 4 --timeout 120
 ```
+
+### Deploy to Render.com (Recommended) ☁️
+
+**One-Click Deploy:**
+
+1. Push your code to GitHub
+2. Go to [Render.com](https://render.com) → New Web Service
+3. Connect your repository
+4. Render automatically detects `render.yaml` and deploys!
+
+**The model file is downloaded automatically during build** - no manual setup needed!
+
+**Features on Render:**
+- ✅ Free tier available
+- ✅ Automatic HTTPS
+- ✅ Auto-deploy on git push
+- ✅ Model auto-downloaded during build
+- ✅ 1GB persistent storage included
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed deployment guide.
 
 ### Docker
 
@@ -192,6 +242,24 @@ gunicorn -w 4 -b 0.0.0.0:5000 app:app
 docker build -t bg-remover .
 docker run -p 5000:5000 bg-remover
 ```
+
+### Other Cloud Platforms
+
+Works on Heroku, Railway, AWS, GCP, Azure. See [DEPLOYMENT.md](DEPLOYMENT.md).
+
+---
+
+## 📦 Model File Management
+
+The U2Net model file (~168MB) is **automatically downloaded** when you:
+- Run `python download_model.py` locally
+- Deploy to Render.com (auto-downloaded during build)
+- Run setup scripts (`setup.bat` or `setup.sh`)
+
+**No need to commit the model file to Git!** It's handled automatically via:
+- Primary source: Hugging Face
+- Fallback: Google Drive
+- You can also host it yourself (see [DEPLOYMENT.md](DEPLOYMENT.md))
 
 ---
 

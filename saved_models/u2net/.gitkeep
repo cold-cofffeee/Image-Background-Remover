@@ -1,0 +1,2 @@
+# This file ensures the directory is tracked by Git
+# Model files (*.pth) will be downloaded automatically by download_model.py
