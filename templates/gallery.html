@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - Premium Background Remover</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .gallery-container {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 3rem auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .gallery-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .gallery-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .gallery-item-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .gallery-item:hover .gallery-item-overlay {
+            opacity: 1;
+        }
+        
+        .gallery-item-btn {
+            background: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #667eea;
+        }
+        
+        .gallery-item-btn:hover {
+            transform: scale(1.1);
+            background: #667eea;
+            color: white;
+        }
+        
+        .empty-gallery {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #7f8c8d;
+        }
+        
+        .empty-gallery i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <i class="fas fa-magic"></i>
+                    <span>BG Remover Pro</span>
+                </div>
+                <div class="nav-links">
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/gallery" class="nav-link active">Gallery</a>
+                    <a href="/#features" class="nav-link">Features</a>
+                    <a href="/#api" class="nav-link">API</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Gallery Section -->
+    <section class="upload-section">
+        <div class="container">
+            <div class="gallery-container">
+                <div class="gallery-header">
+                    <h1>Your Processed Images</h1>
+                    <p>View and manage all your processed images</p>
+                </div>
+                
+                <div id="galleryGrid" class="gallery-grid">
+                    <!-- Gallery items will be loaded here -->
+                </div>
+                
+                <div id="emptyGallery" class="empty-gallery" style="display: none;">
+                    <i class="fas fa-images"></i>
+                    <h3>No images yet</h3>
+                    <p>Process some images to see them here</p>
+                    <a href="/" class="btn btn-primary" style="margin-top: 1.5rem;">
+                        <i class="fas fa-upload"></i> Upload Images
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>BG Remover Pro</h4>
+                    <p>Professional AI-powered background removal service</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/gallery">Gallery</a></li>
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#api">API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BG Remover Pro. Built with ❤️ using U2Net</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Load gallery on page load
+        document.addEventListener('DOMContentLoaded', loadGallery);
+        
+        async function loadGallery() {
+            try {
+                const response = await fetch('/api/gallery');
+                const data = await response.json();
+                
+                const galleryGrid = document.getElementById('galleryGrid');
+                const emptyGallery = document.getElementById('emptyGallery');
+                
+                if (data.images && data.images.length > 0) {
+                    galleryGrid.innerHTML = '';
+                    emptyGallery.style.display = 'none';
+                    
+                    data.images.forEach(image => {
+                        const item = createGalleryItem(image);
+                        galleryGrid.appendChild(item);
+                    });
+                } else {
+                    galleryGrid.innerHTML = '';
+                    emptyGallery.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading gallery:', error);
+            }
+        }
+        
+        function createGalleryItem(image) {
+            const item = document.createElement('div');
+            item.className = 'gallery-item';
+            
+            item.innerHTML = `
+                <img src="${image.url}" alt="${image.filename}">
+                <div class="gallery-item-overlay">
+                    <button class="gallery-item-btn" onclick="downloadGalleryImage('${image.url}', '${image.filename}')">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="gallery-item-btn" onclick="deleteGalleryImage('${image.filename}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            return item;
+        }
+        
+        function downloadGalleryImage(url, filename) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showNotification('Download started');
+        }
+        
+        async function deleteGalleryImage(filename) {
+            if (!confirm('Are you sure you want to delete this image?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/delete/${filename}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    showNotification('Image deleted successfully');
+                    loadGallery();
+                } else {
+                    showNotification('Failed to delete image', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting image:', error);
+                showNotification('Error deleting image', 'error');
+            }
+        }
+    </script>
+</body>
+</html>

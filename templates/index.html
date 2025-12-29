@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Background Remover - AI-Powered Image Processing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <i class="fas fa-magic"></i>
+                    <span>BG Remover Pro</span>
+                </div>
+                <div class="nav-links">
+                    <a href="/" class="nav-link active">Home</a>
+                    <a href="/gallery" class="nav-link">Gallery</a>
+                    <a href="#features" class="nav-link">Features</a>
+                    <a href="#api" class="nav-link">API</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Remove Image Backgrounds
+                    <span class="gradient-text">Instantly with AI</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Professional background removal powered by advanced U2Net deep learning.
+                    No technical skills required. 100% automatic.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number">5M+</div>
+                        <div class="stat-label">Images Processed</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">99.9%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">< 5s</div>
+                        <div class="stat-label">Processing Time</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Section -->
+    <section class="upload-section">
+        <div class="container">
+            <div class="upload-container">
+                <!-- Upload Area -->
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Drag & Drop Your Image</h3>
+                        <p>or click to browse</p>
+                        <input type="file" id="fileInput" accept="image/*" multiple style="display: none;">
+                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-upload"></i> Choose Image
+                        </button>
+                        <p class="upload-info">Supports: PNG, JPG, JPEG, WEBP (Max 16MB)</p>
+                    </div>
+                </div>
+
+                <!-- Processing Indicator -->
+                <div class="processing-indicator" id="processingIndicator" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Processing your image with AI...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section" id="resultsSection" style="display: none;">
+                    <div class="results-header">
+                        <h3>Your Results</h3>
+                        <div class="result-actions">
+                            <button class="btn btn-icon" onclick="downloadImage()" title="Download">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="btn btn-icon" onclick="resetUpload()" title="Process Another">
+                                <i class="fas fa-redo"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Image Comparison -->
+                    <div class="image-comparison">
+                        <div class="comparison-container">
+                            <div class="image-box">
+                                <label>Original</label>
+                                <img id="originalImage" alt="Original">
+                                <div class="image-info" id="originalInfo"></div>
+                            </div>
+                            <div class="comparison-divider">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="image-box">
+                                <label>Processed</label>
+                                <img id="processedImage" alt="Processed">
+                                <div class="image-info" id="processedInfo"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Background Options -->
+                    <div class="background-options">
+                        <h4>Change Background</h4>
+                        <div class="bg-options-grid">
+                            <button class="bg-option active" data-color="transparent" onclick="changeBackground('transparent')">
+                                <div class="bg-preview transparent-pattern"></div>
+                                <span>Transparent</span>
+                            </button>
+                            <button class="bg-option" data-color="#FFFFFF" onclick="changeBackground('#FFFFFF')">
+                                <div class="bg-preview" style="background: #FFFFFF;"></div>
+                                <span>White</span>
+                            </button>
+                            <button class="bg-option" data-color="#000000" onclick="changeBackground('#000000')">
+                                <div class="bg-preview" style="background: #000000;"></div>
+                                <span>Black</span>
+                            </button>
+                            <button class="bg-option" data-color="#3498db" onclick="changeBackground('#3498db')">
+                                <div class="bg-preview" style="background: #3498db;"></div>
+                                <span>Blue</span>
+                            </button>
+                            <button class="bg-option" data-color="#2ecc71" onclick="changeBackground('#2ecc71')">
+                                <div class="bg-preview" style="background: #2ecc71;"></div>
+                                <span>Green</span>
+                            </button>
+                            <button class="bg-option" data-color="#e74c3c" onclick="changeBackground('#e74c3c')">
+                                <div class="bg-preview" style="background: #e74c3c;"></div>
+                                <span>Red</span>
+                            </button>
+                            <button class="bg-option" data-color="custom" onclick="openColorPicker()">
+                                <div class="bg-preview custom-color">
+                                    <i class="fas fa-palette"></i>
+                                </div>
+                                <span>Custom</span>
+                            </button>
+                        </div>
+                        <input type="color" id="customColorPicker" style="display: none;">
+                    </div>
+
+                    <!-- Download Options -->
+                    <div class="download-section">
+                        <h4>Download Options</h4>
+                        <div class="download-options">
+                            <button class="btn btn-success" onclick="downloadImage('png')">
+                                <i class="fas fa-file-image"></i> Download PNG
+                            </button>
+                            <button class="btn btn-secondary" onclick="downloadImage('jpg')">
+                                <i class="fas fa-file-image"></i> Download JPG
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Powerful Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>AI-Powered</h3>
+                    <p>Advanced U2Net deep learning model ensures accurate background removal</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Lightning Fast</h3>
+                    <p>Process images in seconds with optimized GPU acceleration</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <h3>Batch Processing</h3>
+                    <p>Upload and process multiple images simultaneously</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3>Custom Backgrounds</h3>
+                    <p>Replace backgrounds with colors, gradients, or your own images</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <h3>High Quality</h3>
+                    <p>Maintain image quality with lossless PNG export</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Developer API</h3>
+                    <p>RESTful API for easy integration into your applications</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Section -->
+    <section class="api-section" id="api">
+        <div class="container">
+            <h2 class="section-title">Developer API</h2>
+            <div class="api-content">
+                <div class="api-info">
+                    <h3>Integrate with Your Apps</h3>
+                    <p>Our RESTful API makes it easy to add background removal to your applications.</p>
+                    <ul class="api-features">
+                        <li><i class="fas fa-check"></i> Simple REST API</li>
+                        <li><i class="fas fa-check"></i> JSON responses</li>
+                        <li><i class="fas fa-check"></i> Batch processing support</li>
+                        <li><i class="fas fa-check"></i> Comprehensive documentation</li>
+                    </ul>
+                </div>
+                <div class="api-example">
+                    <div class="code-block">
+                        <div class="code-header">
+                            <span>API Example</span>
+                            <button class="copy-btn" onclick="copyCode()"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <pre><code id="apiCode">curl -X POST http://localhost:5000/api/upload \
+  -F "file=@image.jpg" \
+  -F "background_color=transparent" \
+  -F "output_format=png"</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>BG Remover Pro</h4>
+                    <p>Professional AI-powered background removal service</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/gallery">Gallery</a></li>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#api">API</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 BG Remover Pro. Built with ❤️ using U2Net</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
