@@ -8,12 +8,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        .gallery-section {
+            padding: 6rem 0 4rem;
+            min-height: 100vh;
+        }
+
         .gallery-container {
-            background: white;
-            border-radius: 24px;
-            padding: 3rem;
-            margin: 3rem auto;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
         .gallery-header {
@@ -23,84 +25,126 @@
         
         .gallery-header h1 {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+        
+        .gallery-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
         }
         
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
         
         .gallery-item {
             position: relative;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            background: #f8f9fa;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            transition: all 200ms ease;
         }
         
         .gallery-item:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            transform: translateY(-4px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 8px 24px rgba(79, 124, 255, 0.15);
         }
         
-        .gallery-item img {
+        .gallery-item-image {
             width: 100%;
-            height: 200px;
+            height: 240px;
             object-fit: cover;
             display: block;
+            background: var(--bg-elevated);
         }
         
-        .gallery-item-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+        .gallery-item-info {
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .gallery-item-name {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+        
+        .gallery-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .gallery-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 150ms ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            font-size: 0.875rem;
         }
         
-        .gallery-item:hover .gallery-item-overlay {
-            opacity: 1;
-        }
-        
-        .gallery-item-btn {
-            background: white;
-            border: none;
-            padding: 0.75rem 1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #667eea;
-        }
-        
-        .gallery-item-btn:hover {
-            transform: scale(1.1);
-            background: #667eea;
+        .gallery-action-btn:hover {
+            background: var(--accent-primary);
             color: white;
+            border-color: var(--accent-primary);
+            transform: scale(1.05);
+        }
+
+        .gallery-action-btn.delete:hover {
+            background: #ef4444;
+            border-color: #ef4444;
         }
         
         .empty-gallery {
             text-align: center;
-            padding: 4rem 2rem;
-            color: #7f8c8d;
+            padding: 6rem 2rem;
         }
         
-        .empty-gallery i {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            opacity: 0.3;
+        .empty-gallery-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            border-radius: 16px;
+            background: var(--bg-surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .empty-gallery-icon i {
+            font-size: 2rem;
+            color: var(--text-tertiary);
+        }
+        
+        .empty-gallery h3 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-gallery p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
         }
     </style>
 </head>
@@ -118,18 +162,19 @@
                     <a href="/gallery" class="nav-link active">Gallery</a>
                     <a href="/#features" class="nav-link">Features</a>
                     <a href="/#api" class="nav-link">API</a>
+                    <a href="https://github.com/cold-cofffeee/Image-Background-Remover/" class="nav-link" target="_blank">GitHub</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Gallery Section -->
-    <section class="upload-section">
+    <section class="gallery-section">
         <div class="container">
             <div class="gallery-container">
                 <div class="gallery-header">
                     <h1>Your Processed Images</h1>
-                    <p>View and manage all your processed images</p>
+                    <p>View and manage all processed images</p>
                 </div>
                 
                 <div id="galleryGrid" class="gallery-grid">
@@ -137,10 +182,12 @@
                 </div>
                 
                 <div id="emptyGallery" class="empty-gallery" style="display: none;">
-                    <i class="fas fa-images"></i>
+                    <div class="empty-gallery-icon">
+                        <i class="fas fa-images"></i>
+                    </div>
                     <h3>No images yet</h3>
                     <p>Process some images to see them here</p>
-                    <a href="/" class="btn btn-primary" style="margin-top: 1.5rem;">
+                    <a href="/" class="btn btn-primary">
                         <i class="fas fa-upload"></i> Upload Images
                     </a>
                 </div>
@@ -215,14 +262,17 @@
             item.className = 'gallery-item';
             
             item.innerHTML = `
-                <img src="${image.url}" alt="${image.filename}">
-                <div class="gallery-item-overlay">
-                    <button class="gallery-item-btn" onclick="downloadGalleryImage('${image.url}', '${image.filename}')">
-                        <i class="fas fa-download"></i>
-                    </button>
-                    <button class="gallery-item-btn" onclick="deleteGalleryImage('${image.filename}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                <img class="gallery-item-image" src="${image.url}" alt="${image.filename}">
+                <div class="gallery-item-info">
+                    <span class="gallery-item-name">${image.filename}</span>
+                    <div class="gallery-item-actions">
+                        <button class="gallery-action-btn" onclick="downloadGalleryImage('${image.url}', '${image.filename}')" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="gallery-action-btn delete" onclick="deleteGalleryImage('${image.filename}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
             `;
             

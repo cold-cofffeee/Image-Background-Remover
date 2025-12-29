@@ -199,16 +199,38 @@ function animateProgress() {
 }
 
 async function changeBackground(color) {
+    if (!currentOriginalFile) {
+        showNotification('No image to process', 'error');
+        return;
+    }
+
     try {
+        // Update UI
         document.querySelectorAll('.bg-option').forEach(opt => {
             opt.classList.remove('active');
         });
-        event.target.closest('.bg-option')?.classList.add('active');
+        if (event && event.target) {
+            event.target.closest('.bg-option')?.classList.add('active');
+        }
         
+        // Show processing state
+        const processedImage = document.getElementById('processedImage');
+        processedImage.style.opacity = '0.5';
+        
+        // Process with new background
         const formData = new FormData();
-        const response = await fetch(currentProcessedUrl);
-        const blob = await response.blob();
-        formData.append('file', blob);
+        
+        // Use the original uploaded file stored in currentFiles
+        if (currentFiles && currentFiles.length > 0) {
+            formData.append('file', currentFiles[0]);
+        } else {
+            // Fallback: fetch original image
+            const originalUrl = document.getElementById('originalImage').src;
+            const response = await fetch(originalUrl);
+            const blob = await response.blob();
+            formData.append('file', blob, 'image.png');
+        }
+        
         formData.append('background_color', color);
         formData.append('output_format', 'png');
         
@@ -220,12 +242,20 @@ async function changeBackground(color) {
         const result = await uploadResponse.json();
         
         if (result.success) {
-            document.getElementById('processedImage').src = result.processed_url;
+            // Update processed image with cache-busting
+            processedImage.src = result.processed_url + '?t=' + Date.now();
+            processedImage.style.opacity = '1';
             currentProcessedUrl = result.processed_url;
+            showNotification('Background updated');
+        } else {
+            processedImage.style.opacity = '1';
+            showNotification(result.error || 'Failed to change background', 'error');
         }
         
     } catch (error) {
         console.error('Error changing background:', error);
+        document.getElementById('processedImage').style.opacity = '1';
+        showNotification('Error changing background', 'error');
     }
 }
 

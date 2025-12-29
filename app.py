@@ -10,8 +10,20 @@ import uuid
 from datetime import datetime
 import json
 from pathlib import Path
-from services.background_remover import BackgroundRemoverService
-from services.image_processor import ImageProcessor
+
+# Import services with error handling
+try:
+    from services.background_remover import BackgroundRemoverService
+    from services.image_processor import ImageProcessor
+    MODEL_AVAILABLE = True
+except Exception as e:
+    print(f"\n⚠️  Warning: Could not load AI models")
+    print(f"❌ Error: {e}")
+    print(f"\n📋 To fix this, install Microsoft Visual C++ Redistributable:")
+    print(f"📥 Download from: https://aka.ms/vs/17/release/vc_redist.x64.exe\n")
+    MODEL_AVAILABLE = False
+    BackgroundRemoverService = None
+    ImageProcessor = None
 
 app = Flask(__name__)
 
@@ -27,8 +39,13 @@ for folder in ['static/uploads', 'static/processed', 'static/temp']:
     Path(folder).mkdir(parents=True, exist_ok=True)
 
 # Initialize services
-bg_remover = BackgroundRemoverService()
-image_processor = ImageProcessor()
+if MODEL_AVAILABLE:
+    bg_remover = BackgroundRemoverService()
+    image_processor = ImageProcessor()
+else:
+    bg_remover = None
+    image_processor = None
+    print("⏳ App will start in UI-only mode. Install Visual C++ to enable AI features.\n")
 
 def allowed_file(filename):
     """Check if file extension is allowed"""
@@ -72,6 +89,13 @@ def upload_file():
             'background_image': request.form.get('background_image'),
             'output_format': request.form.get('output_format', 'png')
         }
+        
+        # Check if model is available
+        if not MODEL_AVAILABLE or bg_remover is None:
+            return jsonify({
+                'error': 'AI model not available. Please install Microsoft Visual C++ Redistributable.',
+                'download_url': 'https://aka.ms/vs/17/release/vc_redist.x64.exe'
+            }), 503
         
         # Process image
         processed_filename = bg_remover.remove_background(filepath, options)
