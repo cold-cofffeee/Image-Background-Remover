@@ -13,12 +13,12 @@ services:
       python download_model.py
     
     # Start Command
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 300 --preload
     
     # Environment Variables
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12.0
+        value: 3.11.0
       
       - key: SECRET_KEY
         generateValue: true  # Auto-generate secure secret key
