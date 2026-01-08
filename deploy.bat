@@ -106,7 +106,7 @@ git diff --cached --quiet
 if errorlevel 1 (
     REM Commit changes
     echo 💾 Committing changes...
-    git commit -m "Fix Render deployment and add keep-alive workflow" -m "- Updated Python version to 3.11.0 for better compatibility" -m "- Optimized Gunicorn settings for free tier (1 worker, 2 threads)" -m "- Increased timeout to 300s for large image processing" -m "- Updated all package versions for compatibility" -m "- Added GitHub Actions workflow to keep Render app alive 24/7" -m "- Pings every 14 minutes to prevent sleep on free tier"
+    git commit -m "Fix Python/PyTorch compatibility for Render deployment" -m "- Updated torch to 2.5.1 (compatible with Python 3.11-3.13)" -m "- Updated torchvision to 0.20.1" -m "- Added Python version check in build command" -m "- Fixed deployment errors with package compatibility" -m "- Added GitHub Actions keep-alive workflow" -m "- Optimized for Render free tier"
 
     echo.
     echo 🔄 Pushing to GitHub...
@@ -122,6 +122,8 @@ if errorlevel 1 (
         echo.
         echo 1. ✅ Wait for Render to auto-deploy (5-10 minutes^)
         echo    • Check: https://dashboard.render.com
+        echo    • IMPORTANT: Clear build cache if this is a retry!
+        echo    • Settings ^> Build ^& Deploy ^> Clear build cache ^& deploy
         echo.
         echo 2. ✅ Verify deployment in Render logs
         echo    • Should see: 'Listening on port 10000'
